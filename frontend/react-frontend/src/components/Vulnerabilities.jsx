@@ -29,7 +29,7 @@ function Vulnerabilities() {
         setVulnerabilities([]);
         setLoading(false);
       });
-  }, []);
+  }, [vulnerabilities]);
 
   const handleExpandClick = (key) => {
     setExpanded(prevExpanded => ({

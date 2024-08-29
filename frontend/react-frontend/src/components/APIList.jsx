@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Box, Container, Typography } from '@mui/material';
 import APICard from './APICard';
-import './APIList.css'; // Import custom CSS for the horizontal scroll and layout
+import './APIList.css';
 import LoadingComponent from './Loading';
 
 function APIList() {
@@ -34,7 +34,7 @@ function APIList() {
         backgroundImage: 'url(/all_background.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundAttachment: 'fixed', // Make the background fixed
+        backgroundAttachment: 'fixed',
         minHeight: '100vh',
         minWidth: '100vw',
         padding: '2rem 0',
@@ -46,7 +46,7 @@ function APIList() {
           variant="h4"
           align="center"
           gutterBottom
-          sx={{ marginTop: '2rem', marginBottom: '1rem', color: '#fff' }} // Added marginTop for space above the heading
+          sx={{ marginTop: '2rem', marginBottom: '1rem', color: '#fff' }}
         >
           List of APIs
         </Typography>
@@ -62,7 +62,7 @@ function APIList() {
           {Array.isArray(apis) && apis.length > 0 ? (
             apis.map((route, index) => (
               <div className="card-item" key={index}>
-                <APICard path={route.path} method={route.methods[0]} />
+                <APICard path={route.path} method={route.methods} />
               </div>
             ))
           ) : (
