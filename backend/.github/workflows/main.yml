@@ -1,0 +1,61 @@
+name: Docker Build, Run, and Update
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-run-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Set up Docker Buildx (for building multi-platform images, optional)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Build the Docker image and tag it as "app"
+      - name: Build Docker image
+        run: |
+          docker build -t app .
+
+      # Run the Docker container in detached mode
+      - name: Run Docker container in detached mode
+        run: |
+          docker run -d --name app_container -v ${{ github.workspace }}:/app -w /app app
+
+      # Check if there are any changes after the Docker run
+
+
+      - name: Check for file changes
+        id: check_changes
+        run: |
+          latest_commit=$(git rev-parse HEAD)
+          git diff --quiet $latest_commit || echo "changes=true" >> $GITHUB_ENV
+          if [ -z "$changes" ]; then
+            echo "changes=false" >> $GITHUB_ENV
+          fi
+          
+      # Debugging: List git status
+      - name: Check Git Status
+        run: git status
+
+      # Commit and push changes if any
+      - name: Commit and push changes
+        if: env.changes == 'true'
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add .
+          git commit -m "Update files after Docker run"
+          git push origin main
+
+      # Stop and remove the running container after all tasks are complete
+      - name: Stop and remove Docker container
+        run: |
+          docker stop app_container
+          docker rm app_container
