@@ -3,7 +3,7 @@ from flask_cors import CORS
 import threading
 import time
 import subprocess
-import sys
+
 
 # Import vulnerability analyzers and ListAPIs
 from vulnerabilities.Broken_Authentication import analyze_file_for_auth
