@@ -28,7 +28,7 @@ def get_db():
 def close_db(exception):
     db = g.pop('db', None)
     if db is not None:
-        db.close()
+        db.close()           
 
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -52,31 +52,31 @@ def login():
     else:
         return jsonify({"error": "Invalid credentials!"}), 401
 
-@app.route('/products', methods=['GET'])
-def products():
-    db = get_db()
-    products = db.execute('SELECT * FROM products').fetchall()
-    return jsonify([{'id': row[0], 'name': row[1], 'price': row[2]} for row in products])
-
-@app.route('/order', methods=['POST'])
-def order():
-    if 'user_id' not in session:
-        return jsonify({"error": "Not authenticated!"}), 401
-    user_id = session['user_id']
-    product_id = request.json.get('product_id')
-    db = get_db()
-    db.execute('INSERT INTO orders (user_id, product_id) VALUES (?, ?)', (user_id, product_id))
-    db.commit()
-    return jsonify({"message": "Order placed successfully!"}), 201
-
-# @app.route('/admin', methods=['GET'])
-# def admin():
+# @app.route('/products', methods=['GET'])
+# def products():
 #     db = get_db()
-#     orders = db.execute('''SELECT o.id, u.username, p.name 
-#                            FROM orders om
-#                            JOIN users u ON o.user_id = u.id 
-#                            JOIN products p ON o.product_id = p.id''').fetchall()
-#     return jsonify([{'order_id': row[0], 'username': row[1], 'product_name': row[2]} for row in orders])
+#     products = db.execute('SELECT * FROM products').fetchall()
+#     return jsonify([{'id': row[0], 'name': row[1], 'price': row[2]} for row in products])
+
+# @app.route('/order', methods=['POST'])
+# def order():
+#     if 'user_id' not in session:
+#         return jsonify({"error": "Not authenticated!"}), 401
+#     user_id = session['user_id']
+#     product_id = request.json.get('product_id')
+#     db = get_db()
+#     db.execute('INSERT INTO orders (user_id, product_id) VALUES (?, ?)', (user_id, product_id))
+#     db.commit()
+#     return jsonify({"message": "Order placed successfully!"}), 201
+
+@app.route('/admin', methods=['GET'])
+def admin():
+    db = get_db()
+    orders = db.execute('''SELECT o.id, u.username, p.name 
+                           FROM orders om
+                           JOIN users u ON o.user_id = u.id 
+                           JOIN products p ON o.product_id = p.id''').fetchall()
+    return jsonify([{'order_id': row[0], 'username': row[1], 'product_name': row[2]} for row in orders])
 
 
 # @app.route('/admin', methods=['GET'])
@@ -92,18 +92,18 @@ def order():
 #     return jsonify([{'order_id': row[0], 'username': row[1], 'product_name': row[2]} for row in orders])
 
 
-# @app.route('/search', methods=['GET'])
-# def search():
-#     query = request.args.get('q', '')
-#     db = get_db()
-#     cursor = db.cursor()
+@app.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('q', '')
+    db = get_db()
+    cursor = db.cursor()
 
-#     # Vulnerable code: directly injecting the user input into the SQL query
-#     sql_query = f"SELECT * FROM products WHERE name LIKE '%{query}%'"
-#     cursor.execute(sql_query)
+    # Vulnerable code: directly injecting the user input into the SQL query
+    sql_query = f"SELECT * FROM products WHERE name LIKE '%{query}%'"
+    cursor.execute(sql_query)
 
-#     results = cursor.fetchall()
-#     return jsonify(results)
+    results = cursor.fetchall()
+    return jsonify(results)
 
 
 @app.route('/checkout', methods=['POST'])

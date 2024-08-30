@@ -1,6 +1,13 @@
+Broken Authentication:
+ - admin
+
 Broken Object Level Authorization:
  - get_db
- - products
+ - admin
+ - search
+
+SQL Injection:
+ - search
 
 Unrestricted Resource Consumption:
  - checkout
@@ -9,33 +16,35 @@ Broken Object Property Level Authorization:
  - get_db
  - signup
  - login
- - order
+ - admin
  - checkout
  - user_details
  - change_password
  - delete_order
 
 SSRF:
- - redirect_to_external_api
- - fetch_data
  - fetch_url
+ - fetch_data
+ - redirect_to_external_api
 
 Broken Function Level Authorization:
+ - admin
  - delete_order
 
 Unrestricted Business Flow:
  - process_credit_card
+ - admin
  - process_payment
 
 Security Misconfiguration:
- - None
  - unsafe_load
+ - None
 
 Improper Inventory Management:
  - all_endpoints
 
 Unsafe API Usage:
- - redirect_to_external_api
- - fetch_data
  - fetch_url
+ - fetch_data
+ - redirect_to_external_api
 
