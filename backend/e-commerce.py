@@ -7,37 +7,37 @@ app.secret_key = 'super_secure_secret_key'
 
 DATABASE = ':memory:'
 
-def process_credit_card(card_number, amount):
-    print(f"Processing payment:\nCard Number: {card_number}\nAmount: {amount}")
-    return {"status": "success", "message": "Payment processed successfully"}
+# def process_credit_card(card_number, amount):
+#     print(f"Processing payment:\nCard Number: {card_number}\nAmount: {amount}")
+#     return {"status": "success", "message": "Payment processed successfully"}
 
-def get_db():
-    if 'db' not in g:
-        g.db = sqlite3.connect(DATABASE)
-        g.db.execute('''CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, role TEXT)''')
-        g.db.execute('''CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT, price REAL)''')
-        g.db.execute('''CREATE TABLE orders (id INTEGER PRIMARY KEY, user_id INTEGER, product_id INTEGER)''')
-        g.db.execute('''INSERT INTO users (username, password, role) VALUES ('admin', 'adminpass', 'admin')''')
-        g.db.execute('''INSERT INTO users (username, password, role) VALUES ('user1', 'user1pass', 'user')''')
-        g.db.execute('''INSERT INTO products (name, price) VALUES ('Product1', 10.0)''')
-        g.db.execute('''INSERT INTO products (name, price) VALUES ('Product2', 20.0)''')
-        g.db.commit()
-    return g.db
+# def get_db():
+#     if 'db' not in g:
+#         g.db = sqlite3.connect(DATABASE)
+#         g.db.execute('''CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, role TEXT)''')
+#         g.db.execute('''CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT, price REAL)''')
+#         g.db.execute('''CREATE TABLE orders (id INTEGER PRIMARY KEY, user_id INTEGER, product_id INTEGER)''')
+#         g.db.execute('''INSERT INTO users (username, password, role) VALUES ('admin', 'adminpass', 'admin')''')
+#         g.db.execute('''INSERT INTO users (username, password, role) VALUES ('user1', 'user1pass', 'user')''')
+#         g.db.execute('''INSERT INTO products (name, price) VALUES ('Product1', 10.0)''')
+#         g.db.execute('''INSERT INTO products (name, price) VALUES ('Product2', 20.0)''')
+#         g.db.commit()
+#     return g.db
 
-@app.teardown_appcontext
-def close_db(exception):
-    db = g.pop('db', None)
-    if db is not None:
-        db.close()           
+# @app.teardown_appcontext
+# def close_db(exception):
+#     db = g.pop('db', None)
+#     if db is not None:
+#         db.close()           
 
-@app.route('/signup', methods=['POST'])
-def signup():
-    username = request.json.get('username')
-    password = request.json.get('password')
-    db = get_db()
-    db.execute('INSERT INTO users (username, password, role) VALUES (?, ?, ?)', (username, password, 'user'))
-    db.commit()
-    return jsonify({"message": "User created successfully!"}), 201
+# @app.route('/signup', methods=['POST'])
+# def signup():
+#     username = request.json.get('username')
+#     password = request.json.get('password')
+#     db = get_db()
+#     db.execute('INSERT INTO users (username, password, role) VALUES (?, ?, ?)', (username, password, 'user'))
+#     db.commit()
+#     return jsonify({"message": "User created successfully!"}), 201
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -52,34 +52,34 @@ def login():
     else:
         return jsonify({"error": "Invalid credentials!"}), 401
 
-# @app.route('/products', methods=['GET'])
-# def products():
-#     db = get_db()
-#     products = db.execute('SELECT * FROM products').fetchall()
-#     return jsonify([{'id': row[0], 'name': row[1], 'price': row[2]} for row in products])
-
-# @app.route('/order', methods=['POST'])
-# def order():
-#     if 'user_id' not in session:
-#         return jsonify({"error": "Not authenticated!"}), 401
-#     user_id = session['user_id']
-#     product_id = request.json.get('product_id')
-#     db = get_db()
-#     db.execute('INSERT INTO orders (user_id, product_id) VALUES (?, ?)', (user_id, product_id))
-#     db.commit()
-#     return jsonify({"message": "Order placed successfully!"}), 201
-
-@app.route('/admin', methods=['GET'])
-def admin():
+@app.route('/products', methods=['GET'])
+def products():
     db = get_db()
-    orders = db.execute('''SELECT o.id, u.username, p.name 
-                           FROM orders om
-                           JOIN users u ON o.user_id = u.id 
-                           JOIN products p ON o.product_id = p.id''').fetchall()
-    return jsonify([{'order_id': row[0], 'username': row[1], 'product_name': row[2]} for row in orders])
+    products = db.execute('SELECT * FROM products').fetchall()
+    return jsonify([{'id': row[0], 'name': row[1], 'price': row[2]} for row in products])
 
+@app.route('/order', methods=['POST'])
+def order():
+    if 'user_id' not in session:
+        return jsonify({"error": "Not authenticated!"}), 401
+    user_id = session['user_id']
+    product_id = request.json.get('product_id')
+    db = get_db()
+    db.execute('INSERT INTO orders (user_id, product_id) VALUES (?, ?)', (user_id, product_id))
+    db.commit()
+    return jsonify({"message": "Order placed successfully!"}), 201
 
 # @app.route('/admin', methods=['GET'])
+# def admin():
+#     db = get_db()
+#     orders = db.execute('''SELECT o.id, u.username, p.name 
+#                            FROM orders om
+#                            JOIN users u ON o.user_id = u.id 
+#                            JOIN products p ON o.product_id = p.id''').fetchall()
+#     return jsonify([{'order_id': row[0], 'username': row[1], 'product_name': row[2]} for row in orders])
+
+
+# @app.route('/data_admin', methods=['GET'])
 # def admin():
 #     if 'user_id' not in session or session.get('role') != 'admin':
 #         return jsonify({"error": "Unauthorized access!"}), 403
@@ -106,18 +106,18 @@ def search():
     return jsonify(results)
 
 
-@app.route('/checkout', methods=['POST'])
-def checkout():
-    if 'user_id' not in session:
-        return jsonify({"error": "Not authenticated!"}), 401
-    user_id = session['user_id']
-    total = 0
-    db = get_db()
-    orders = db.execute('SELECT p.price FROM orders o JOIN products p ON o.product_id = p.id WHERE o.user_id = ?', (user_id,)).fetchall()
-    for _ in range(1000000):
-        for order in orders:
-            total += order[0]
-    return jsonify({"total": total}), 200
+# @app.route('/checkout', methods=['POST'])
+# def checkout():
+#     if 'user_id' not in session:
+#         return jsonify({"error": "Not authenticated!"}), 401
+#     user_id = session['user_id']
+#     total = 0
+#     db = get_db()
+#     orders = db.execute('SELECT p.price FROM orders o JOIN products p ON o.product_id = p.id WHERE o.user_id = ?', (user_id,)).fetchall()
+#     for _ in range(1000000):
+#         for order in orders:
+#             total += order[0]
+#     return jsonify({"total": total}), 200
 
 @app.route('/logout', methods=['POST'])
 def logout():
@@ -199,15 +199,15 @@ def fetch_url():
     except:
         return 'Unable to fetch URL'
 
-# @app.route('/fetch-data', methods=['POST'])
-# def fetch_data():
-#     external_api_url = request.json.get('url')
-#     sensitive_data = request.json.get('sensitive_data')
-#     try:
-#         response = requests.post(external_api_url, json={"data": sensitive_data})
-#         return response.text
-#     except Exception as e:
-#         return str(e), 500
+@app.route('/fetch-data', methods=['POST'])
+def fetch_data():
+    external_api_url = request.json.get('url')
+    sensitive_data = request.json.get('sensitive_data')
+    try:
+        response = requests.post(external_api_url, json={"data": sensitive_data})
+        return response.text
+    except Exception as e:
+        return str(e), 500
 
 @app.route('/redirect', methods=['POST'])
 def redirect_to_external_api():
@@ -218,10 +218,15 @@ def redirect_to_external_api():
     except Exception as e:
         return str(e), 500
     
-# @app.route('/dummy', methods=['POST'])
-# def dummy():
-#     session.clear()
-#     return jsonify({"message": "Logged out successfully!"})
+@app.route('/dummy', methods=['POST'])
+def dummy():
+    session.clear()
+    return jsonify({"message": "Logged out successfully!"})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5002)
+
+
+
+
+

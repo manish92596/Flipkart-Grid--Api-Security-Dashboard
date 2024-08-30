@@ -104,7 +104,31 @@
 
 
 
-# new code with script optimize 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# # new code with script optimize 
+
+
+
 import subprocess
 import logging
 import argparse
@@ -112,28 +136,16 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import time
 import os
-
-# Import vulnerability analyzers and ListAPIs
-from vulnerabilities.Broken_Authentication import analyze_file_for_auth
-from vulnerabilities.Broken_Object_Level_Authorization import analyze_file_for_bola
-from vulnerabilities.SQL_Injection import analyze_file_for_sql_injection
-from vulnerabilities.Unrestricted_Resource_Consumption import analyze_file_for_resource_consumption
-from vulnerabilities.BOPA import analyze_file_for_broken_property_auth
-from vulnerabilities.SSRF import analyze_file_for_ssrf
-from vulnerabilities.BFLA import analyze_file_for_bfla
-from vulnerabilities.Unrestricted_business_flow import analyze_file_for_unrestricted_business_flow
-from vulnerabilities.security_misconfig import analyze_file_for_security_misconfig
-from vulnerabilities.improper_inventory_management import analyze_file_for_improper_inventory_management
-from vulnerabilities.unsafe_api_usage import analyze_file_for_unsafe_api_usage
+import importlib.util
+import inspect
 
 from api.List_APIs import list_routes_in_file
 
-# Setup logging to save logs in events_log.txt
+# Setup logging
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     handlers=[
                         logging.FileHandler("events_log.txt"),
-                        logging.StreamHandler()
                     ])
 
 logger = logging.getLogger(__name__)
@@ -170,6 +182,26 @@ def run_import_apis():
     except subprocess.CalledProcessError as e:
         logger.error(f"Error running import_apis.py: {e}")
 
+def load_analyzers():
+    """Dynamically load all vulnerability analyzers from the 'vulnerabilities' directory."""
+    analyzers = {}
+    vulnerabilities_path = os.path.join(os.path.dirname(__file__), 'vulnerabilities')
+
+    for filename in os.listdir(vulnerabilities_path):
+        if filename.endswith('.py') and not filename.startswith('__'):
+            module_name = filename[:-3]
+            module_path = os.path.join(vulnerabilities_path, filename)
+            spec = importlib.util.spec_from_file_location(module_name, module_path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            
+            # Automatically find functions starting with 'analyze_file_for_'
+            for name, func in inspect.getmembers(module, inspect.isfunction):
+                if name.startswith('analyze_file_for_'):
+                    analyzers[module_name] = func
+
+    return analyzers
+
 def update_caches(file_path):
     global cached_api_routes, cached_vulnerabilities
 
@@ -184,24 +216,17 @@ def update_caches(file_path):
         with open('all_apis.txt', 'w') as api_file:
             for route in cached_api_routes:
                 api_file.write(f"{route}\n")
-        logger.info(f"API routes updated: {new_api_routes}")
+        logger.info(f"API routes updated: {new_api_routes}")        
         changes_detected = True
 
     # Update vulnerabilities
-    logger.debug("Found vulnerabilities...")
-    new_vulnerabilities = {
-        'Broken Authentication': analyze_file_for_auth(file_path),
-        'Broken Object Level Authorization': analyze_file_for_bola(file_path),
-        'SQL Injection': [str(v) for v in analyze_file_for_sql_injection(file_path)],
-        'Unrestricted Resource Consumption': analyze_file_for_resource_consumption(file_path),
-        'Broken Object Property Level Authorization': analyze_file_for_broken_property_auth(file_path),
-        'SSRF': [str(v) for v in analyze_file_for_ssrf(file_path)],
-        'Broken Function Level Authorization': analyze_file_for_bfla(file_path),
-        'Unrestricted Business Flow': [str(v) for v in analyze_file_for_unrestricted_business_flow(file_path)],
-        'Security Misconfiguration': [str(v) for v in analyze_file_for_security_misconfig(file_path)],
-        'Improper Inventory Management': [str(v) for v in analyze_file_for_improper_inventory_management(file_path)],
-        'Unsafe API Usage': [str(v) for v in analyze_file_for_unsafe_api_usage(file_path)]
-    }
+    logger.debug("Search for vulnerabilities...")
+    analyzers = load_analyzers()
+    new_vulnerabilities = {}
+
+    for vuln_name, analyzer_func in analyzers.items():
+        formatted_vuln_name = vuln_name.replace('_', ' ')
+        new_vulnerabilities[formatted_vuln_name] = set(analyzer_func(file_path))
 
     if new_vulnerabilities != cached_vulnerabilities:
         cached_vulnerabilities = new_vulnerabilities
@@ -220,13 +245,15 @@ def update_caches(file_path):
         run_import_apis()
 
 def monitor_file(file_path):
-    print("4")
+    # Perform an initial scan
+    logger.info(f"Performing initial scan of {file_path}...")
+    update_caches(file_path)
+
     event_handler = FileChangeHandler(file_path)
     observer = Observer()
     observer.schedule(event_handler, path=os.path.dirname(os.path.abspath(file_path)), recursive=False)
     observer.start()
     logger.info(f"Started monitoring {file_path} for changes...")
-    print("5")
     try:
         while True:
             time.sleep(1)
@@ -239,7 +266,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run the API scanner.')
     parser.add_argument('--file_path', type=str, required=True, help='Path to the file to be scanned (e.g., e-commerce.py)')
     args = parser.parse_args()
-    print("1")
 
     file_path = args.file_path  # Use the file path provided by the user
 
@@ -247,7 +273,12 @@ if __name__ == '__main__':
     if not os.path.exists(file_path):
         logger.error(f"The file {file_path} does not exist. Exiting...")
         exit(1)
-    print("2")
+
     # Monitor the file for changes and update caches accordingly
     monitor_file(file_path)
-    print("3")
+
+
+
+
+# use this command
+# python scanner.py --file_path=./e-commerce.py
