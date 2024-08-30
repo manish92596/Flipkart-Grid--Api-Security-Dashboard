@@ -199,15 +199,15 @@ def fetch_url():
     except:
         return 'Unable to fetch URL'
 
-@app.route('/fetch-data', methods=['POST'])
-def fetch_data():
-    external_api_url = request.json.get('url')
-    sensitive_data = request.json.get('sensitive_data')
-    try:
-        response = requests.post(external_api_url, json={"data": sensitive_data})
-        return response.text
-    except Exception as e:
-        return str(e), 500
+# @app.route('/fetch-data', methods=['POST'])
+# def fetch_data():
+#     external_api_url = request.json.get('url')
+#     sensitive_data = request.json.get('sensitive_data')
+#     try:
+#         response = requests.post(external_api_url, json={"data": sensitive_data})
+#         return response.text
+#     except Exception as e:
+#         return str(e), 500
 
 @app.route('/redirect', methods=['POST'])
 def redirect_to_external_api():

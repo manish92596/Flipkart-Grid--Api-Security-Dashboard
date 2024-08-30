@@ -12,5 +12,4 @@
 {'path': '/process-payment', 'methods': ['POST']}
 {'path': '/', 'methods': 'GET'}
 {'path': '/fetch', 'methods': ['GET', 'POST']}
-{'path': '/fetch-data', 'methods': ['POST']}
 {'path': '/redirect', 'methods': ['POST']}
