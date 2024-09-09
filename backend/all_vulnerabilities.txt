@@ -1,27 +1,21 @@
-Broken Authentication:
- - admin
-
 Broken Function Level Authorization:
  - data_admin
  - delete_order
- - admin
 
 Broken Object Level Authorization:
- - products
  - get_db
+ - products
  - search
- - admin
 
 Broken Object Property Level Authorization:
- - get_db
- - change_password
- - order
  - signup
  - checkout
- - delete_order
  - user_details
- - admin
+ - get_db
  - login
+ - order
+ - delete_order
+ - change_password
 
 Improper Inventory Management:
  - all_endpoints
@@ -30,21 +24,17 @@ Security Misconfiguration:
  - unsafe_load
  - None
 
-SQL Injection:
- - search
-
 SSRF:
- - fetch_url
  - redirect_to_external_api
+ - fetch_url
 
 Unrestricted Business Flow:
  - process_credit_card
- - admin
 
 Unrestricted Resource Consumption:
  - checkout
 
 Unsafe Api Usage:
- - fetch_url
  - redirect_to_external_api
+ - fetch_url
 

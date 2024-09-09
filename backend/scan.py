@@ -6,7 +6,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 # Define the URL of the Flask endpoint
-url = "http://127.0.0.1:5001/scan"
+url = "http://127.0.0.1:50001/scan"
 
 # Define the data to send in the POST request
 data = {

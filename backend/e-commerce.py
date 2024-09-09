@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, session, g
 import sqlite3
 import flask_cors
 
-app = Flask(_name_)
+app = Flask(__name__)
 app.secret_key = 'super_secure_secret_key'
 
 DATABASE = ':memory:'
@@ -53,7 +53,18 @@ def login():
         return jsonify({"error": "Invalid credentials!"}), 401
 
 
+# @app.route('/admin', methods=['GET'])
+# def admin():
+#     db = get_db()
+#     orders = db.execute('''SELECT o.id, u.username, p.name 
+#                            FROM orders om
+#                            JOIN users u ON o.user_id = u.id 
+#                            JOIN products p ON o.product_id = p.id''').fetchall()
+#     return jsonify([{'order_id': row[0], 'username': row[1], 'product_name': row[2]} for row in orders])
 
+
+
+# correct code
 @app.route('/search', methods=['GET'])
 def search():
     query = request.args.get('q', '')
@@ -63,28 +74,30 @@ def search():
     results = cursor.fetchall()
     return jsonify(results)
 
+
+# vulnerable code
+# @app.route('/search', methods=['GET'])
+# def search():
+#     query = request.args.get('q', '')
+#     db = get_db()
+#     cursor = db.cursor()
+
+#     # Vulnerable code: directly injecting the user input into the SQL query
+#     sql_query = f"SELECT * FROM products WHERE name LIKE '%{query}%'"
+#     cursor.execute(sql_query)
+
+#     results = cursor.fetchall()
+#     return jsonify(results)
+
+
+
+
+
 @app.route('/products', methods=['GET'])
 def products():
     db = get_db()
     products = db.execute('SELECT * FROM products').fetchall()
     return jsonify([{'id': row[0], 'name': row[1], 'price': row[2]} for row in products])
-
-@app.route('/search', methods=['GET'])
-def search():
-    query = request.args.get('q', '')
-    db = get_db()
-    cursor = db.cursor()
-
-    # Vulnerable code: directly injecting the user input into the SQL query
-    sql_query = f"SELECT * FROM products WHERE name LIKE '%{query}%'"
-    cursor.execute(sql_query)
-
-    results = cursor.fetchall()
-    return jsonify(results)
-
-
-
-
 
 
 
@@ -99,14 +112,7 @@ def order():
     db.commit()
     return jsonify({"message": "Order placed successfully!"}), 201
 
-@app.route('/admin', methods=['GET'])
-def admin():
-    db = get_db()
-    orders = db.execute('''SELECT o.id, u.username, p.name 
-                           FROM orders om
-                           JOIN users u ON o.user_id = u.id 
-                           JOIN products p ON o.product_id = p.id''').fetchall()
-    return jsonify([{'order_id': row[0], 'username': row[1], 'product_name': row[2]} for row in orders])
+
 
 @app.route('/data_admin', methods=['GET'])
 def data_admin():
@@ -216,5 +222,5 @@ def redirect_to_external_api():
         return str(e), 500
 
 
-if _name_ == '_main_':
+if __name__ == '_main_':
     app.run(debug=True, port=5002)
