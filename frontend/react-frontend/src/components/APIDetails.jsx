@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Box, Container, Typography, Paper, Grid } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import LoadingComponent from './Loading';
+import BASE_URL from './baseURL';
 
 function APIDetails() {
   const { path } = useParams();
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(`http://localhost:5001/api/vulnerabilities/${path}`)
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+    }
+    axios.get(`${BASE_URL}/api/vulnerabilities/${path}`)
       .then(response => {
         setDetails(response.data);
         setLoading(false);

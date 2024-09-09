@@ -7,6 +7,7 @@ function APICard({ path, method }) {
     <Card 
       sx={{ 
         width: 300,
+        height: 200,
         margin: 'auto',
         background: 'linear-gradient(135deg, #2b2b44, #2e2e5b)',
         borderRadius: '15px',
@@ -14,32 +15,35 @@ function APICard({ path, method }) {
         color: '#ffffff',
       }}
     >
-      <CardContent>
-        <Typography gutterBottom variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
-          Path: {path}
-        </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '1rem' }}>
-          <Typography variant="body2" color="textSecondary" sx={{ fontWeight: 'bold', color: '#c0c0ff' }}>
-            Method: {method}
-          </Typography>
-        </Box>
-        <Button 
-          variant="contained" 
-          color="primary" 
-          component={Link} 
-          to={`/api-details/${path.replace('/', '')}`} 
-          sx={{ 
-            marginTop: '1rem', 
-            backgroundColor: '#c101fb',
-            '&:hover': {
-              backgroundColor: '#b300e6',
-              color: '#ffffff',
-            },
-          }}
-        >
-          View Details
-        </Button>
-      </CardContent>
+      <CardContent style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
+  <div>
+    <Typography gutterBottom variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
+      Path: {path}
+    </Typography>
+    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '1rem' }}>
+      <Typography variant="body2" color="textSecondary" sx={{ fontWeight: 'bold', color: '#c0c0ff' }}>
+        Method: {method}
+      </Typography>
+    </Box>
+  </div>
+  <Button 
+    variant="contained" 
+    color="primary" 
+    component={Link} 
+    to={`/api-details/${path.replace('/', '')}`} 
+    sx={{ 
+      marginTop: 'auto', 
+      marginBottom: '0.25rem',
+      backgroundColor: '#c101fb',
+      '&:hover': {
+        backgroundColor: '#b300e6',
+        color: '#ffffff',
+      },
+    }}
+  >
+    View Details
+  </Button>
+</CardContent>
     </Card>
   );
 }

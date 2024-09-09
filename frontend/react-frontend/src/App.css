@@ -3,6 +3,12 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  overflow: hidden;
+}
+
+body {
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .logo {

@@ -5,12 +5,16 @@ import APIList from './components/APIList';
 import Vulnerabilities from './components/Vulnerabilities';
 import APIDetails from './components/APIDetails';
 import Dashboard from './components/Dashboard';
+import Login from './components/Login';
+import AboutUs from './components/AboutUs';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/about" element={<AboutUs />} />
         <Route path="/apis" element={<APIList />} />
         <Route path="/vulnerabilities" element={<Vulnerabilities />} />
         <Route path="/api-details/:path" element={<APIDetails />} />

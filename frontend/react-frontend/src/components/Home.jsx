@@ -1,86 +1,80 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Button, Box, Container } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShieldHalved } from '@fortawesome/free-solid-svg-icons';
 
 function Home() {
+  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Update the login state based on the presence of a token in local storage
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const handleNavigation = (path) => {
+    if (!isLoggedIn) {
+      navigate('/login');
+    } else {
+      navigate(path);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token'); // Remove the token from local storage
+    setIsLoggedIn(false); // Update state to reflect the logout
+    navigate('/'); // Optionally redirect the user to the homepage
+  };
+
   return (
     <Box
       sx={{
-        backgroundImage: 'url(/background.png)', // Use the image from the public folder
-        backgroundSize: 'cover', // Cover the entire container
-        backgroundPosition: 'center', // Center the image
-        backgroundRepeat: 'no-repeat', // Prevent the image from repeating
+        backgroundImage: 'url(/background.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
         height: '100vh',
         width: '100vw',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        flexDirection: 'column', // Stack navbar and content vertically
+        flexDirection: 'column',
         color: '#ffffff',
-        overflowX: 'hidden', // Prevent horizontal scrolling
+        overflowX: 'hidden',
       }}
     >
-      {/* Transparent Navbar */}
-      <AppBar 
-        position="static" 
-        sx={{ 
-          backgroundColor: 'transparent', // Make navbar transparent
-          boxShadow: 'none', // Remove shadow
-          width: '100%', // Ensure it spans the full width
-          maxWidth: '1200px', // Keep it within container's width
-        }}
-      >
+      <AppBar position="static" sx={{ backgroundColor: 'transparent', boxShadow: 'none', width: '100%', maxWidth: '1200px' }}>
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             API Security
           </Typography>
-          <Button 
-            component={Link} 
-            to="/" 
-            sx={{ 
-              color: '#ffffff', 
-              '&:hover': {
-                color: '#c101fb', // Change hover color to match the "Security" word color
-              }
-            }}
-          >
+          <Button onClick={() => handleNavigation('/')} sx={{ color: '#ffffff', '&:hover': { color: '#c101fb' } }}>
             Home
           </Button>
-          <Button 
-            component={Link} 
-            to="/dashboard" 
-            sx={{ 
-              color: '#ffffff', 
-              '&:hover': {
-                color: '#c101fb', // Change hover color to match the "Security" word color
-              }
-            }}
-          >
+          <Button onClick={() => handleNavigation('/dashboard')} sx={{ color: '#ffffff', '&:hover': { color: '#c101fb' } }}>
             Dashboard
           </Button>
-          <Button 
-            component={Link} 
-            to="/about" 
-            sx={{ 
-              color: '#ffffff', 
-              '&:hover': {
-                color: '#c101fb', // Change hover color to match the "Security" word color
-              }
-            }}
-          >
+          <Link to='/about'><Button sx={{ color: '#ffffff', '&:hover': { color: '#c101fb' } }}>
             About Us
-          </Button>
+          </Button></Link>
+          {isLoggedIn ? (
+            <Button onClick={handleLogout} sx={{ color: '#ffffff', '&:hover': { color: '#c101fb' } }}>
+              Logout
+            </Button>
+          ) : (
+            <Button onClick={() => handleNavigation('/login')} sx={{ color: '#ffffff', '&:hover': { color: '#c101fb' } }}>
+              Login
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
 
-      {/* Main Content */}
       <Container 
         maxWidth="md" 
         sx={{ 
           textAlign: 'center',
-          flexGrow: 1, // Ensures the container grows to fill available space
+          flexGrow: 1,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -94,8 +88,7 @@ function Home() {
         </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
           <Button
-            component={Link}
-            to="/apis"
+            onClick={() => handleNavigation('/apis')}
             variant="contained"
             sx={{
               background: 'linear-gradient(90deg, #ff6a00, #ee0979)',
@@ -112,8 +105,7 @@ function Home() {
             Show All APIs
           </Button>
           <Button
-            component={Link}
-            to="/vulnerabilities"
+            onClick={() => handleNavigation('/vulnerabilities')}
             variant="outlined"
             sx={{
               border: '2px solid',
