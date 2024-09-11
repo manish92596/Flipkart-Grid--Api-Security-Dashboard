@@ -40,4 +40,6 @@ https://github.com/user-attachments/assets/60c734ef-4aa3-4488-866e-c7666406a02d
 </br>
 </br>
 
+In this video, we demonstrate the CI/CD pipeline and regression testing of various vulnerability modules. We show how the test cases behave when a new vulnerability module is added, ensuring that any newly introduced vulnerabilities are identified and managed effectively. If all test cases pass, the deployment proceeds smoothly to AWS. However, if even one test case fails, the deployment is halted, preventing any potential security risks from reaching the production environment. This process ensures that only secure and thoroughly tested updates are deployed, maintaining the integrity and safety of your application.
+
 https://github.com/user-attachments/assets/1c27dcb2-41b1-415d-87a1-c349d08b13e5
