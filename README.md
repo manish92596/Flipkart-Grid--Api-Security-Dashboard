@@ -23,13 +23,19 @@ Clone this repository
 </br>
 
     https://github.com/manish92596/e-commerce-test.git
+    
+</br>
+
+In this video, we provide a walkthrough of our API security dashboard and demonstrate how newly added APIs are detected in real-time.
 
 https://github.com/user-attachments/assets/269c3b44-2f38-47bc-a2cc-510f6c15f2dc
 
 </br>
 </br>
 
-https://github.com/user-attachments/assets/c5a25628-338d-4f28-bd97-e82a5b137430
+In this video, we demonstrate how our dashboard detects new vulnerabilities if they exist in an API. We also explain the security score pie chart, which provides an overview of how much of the code is secure versus vulnerable. Additionally, we discuss the bar graph, which shows the distribution of different vulnerabilities and highlights those that pose the most risk, helping you quickly identify and prioritize areas that need immediate attention.
+
+https://github.com/user-attachments/assets/60c734ef-4aa3-4488-866e-c7666406a02d
 
 </br>
 </br>
